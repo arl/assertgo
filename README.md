@@ -1,5 +1,4 @@
-# assertgo
-
+# assertgo &nbsp;&nbsp; [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/aurelien-rainone/assertgo) 
 **Conditionally compiled assertions in Go**
 
 
