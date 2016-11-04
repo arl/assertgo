@@ -30,7 +30,7 @@ program end
 ```
 
 Nothing happened because `assert.True()` is conditionnaly compiled to a noop,
-an empty function.
+(i.e an empty function).
 
 
 ### Debug run
