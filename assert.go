@@ -18,7 +18,7 @@ func True(cond bool, format string, args ...interface{}) {
 		if args == nil || len(args) == 0 {
 			panic(format)
 		} else {
-			panic(fmt.Sprintf(format, args))
+			panic(fmt.Sprintf(format, args...))
 		}
 	}
 }
