@@ -74,3 +74,31 @@ func TestTruef(t *testing.T) {
 func TestFalsef(t *testing.T) {
 	testAssert(t, func(exp bool, format string, a ...interface{}) { Falsef(!exp, format, a) })
 }
+
+func BenchmarkTrue(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		True(true, "")
+	}
+}
+
+func BenchmarkFalse(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		False(false, "")
+	}
+}
+
+func BenchmarkTruef(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Truef(true, "")
+	}
+}
+
+func BenchmarkFalsef(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Falsef(false, "")
+	}
+}

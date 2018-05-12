@@ -21,7 +21,7 @@ func True(cond bool, a ...interface{}) {
 // The behaviour displayed by False is enabled only if the 'debug' build tag has
 // been provided during compilation, otherwise False is a noop.
 func False(cond bool, a ...interface{}) {
-	True(!cond, fmt.Sprint(a...))
+	Truef(!cond, fmt.Sprint(a...))
 }
 
 // Truef panics if cond is false. Truef formats the panic message according to a
