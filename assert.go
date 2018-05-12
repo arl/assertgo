@@ -4,7 +4,6 @@ package assert
 
 import (
 	"fmt"
-	"log"
 )
 
 // True panics if cond is false. Truef formats the panic message using the
@@ -13,7 +12,7 @@ import (
 // The behaviour displayed by True is enabled only if the 'debug' build tag has
 // been provided during compilation, otherwise True is a noop.
 func True(cond bool, a ...interface{}) {
-	Truef(cond, fmt.Sprint(a))
+	Truef(cond, fmt.Sprint(a...))
 }
 
 // False panics if cond is true. False formats the panic message using the
@@ -22,7 +21,7 @@ func True(cond bool, a ...interface{}) {
 // The behaviour displayed by False is enabled only if the 'debug' build tag has
 // been provided during compilation, otherwise False is a noop.
 func False(cond bool, a ...interface{}) {
-	True(!cond, fmt.Sprint(a))
+	True(!cond, fmt.Sprint(a...))
 }
 
 // Truef panics if cond is false. Truef formats the panic message according to a
@@ -32,7 +31,7 @@ func False(cond bool, a ...interface{}) {
 // been provided during compilation, otherwise Truef is a noop.
 func Truef(cond bool, format string, a ...interface{}) {
 	if !cond {
-		log.Println("--- --- Debug Assertion Failed --- --- ---")
+		fmt.Println("--- --- Debug Assertion Failed --- --- ---")
 		if a == nil || len(a) == 0 {
 			panic(format)
 		} else {
