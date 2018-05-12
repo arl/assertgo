@@ -1,7 +1,6 @@
 package assert
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -48,8 +47,6 @@ func testAssert(t *testing.T, f assertFunc, correct bool) {
 		{correct: !correct, format: "", args: nil, shouldPanic: isDebug},
 		{correct: !correct, format: "", args: []interface{}{1, "val", 3.14}, shouldPanic: isDebug},
 	}
-
-	fmt.Println("debug flag is set?", isDebug)
 
 	for _, tt := range tests {
 		got, msg := hasPanicked(func() {
