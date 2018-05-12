@@ -24,56 +24,81 @@ func hasPanicked(f func()) (bool, interface{}) {
 	return didPanic, msg
 }
 
-type assertFunc func(bool, string, ...interface{})
+func testAssert(t *testing.T, f func(bool, string, ...interface{})) {
 
-func testAssert(t *testing.T, f assertFunc, correct bool) {
 	tests := []struct {
-		correct     bool
-		format      string
-		args        []interface{}
-		shouldPanic bool
+		format string
+		args   []interface{}
 	}{
-		// correct assertion: should never panic
-		{correct: correct, format: "%v %v %v", args: []interface{}{1, "val", 3.14}, shouldPanic: false},
-		{correct: correct, format: "wrong num of placeholders ", args: []interface{}{1, "val", 3.14}, shouldPanic: false},
-		{correct: correct, format: "format", args: nil, shouldPanic: false},
-		{correct: correct, format: "", args: nil, shouldPanic: false},
-		{correct: correct, format: "", args: []interface{}{1, "val", 3.14}, shouldPanic: false},
-
-		// uncorrect assertion: should panic if debug flag is set
-		{correct: !correct, format: "%v %v %v", args: []interface{}{1, "val", 3.14}, shouldPanic: isDebug},
-		{correct: !correct, format: "wrong num of placeholders ", args: []interface{}{1, "val", 3.14}, shouldPanic: isDebug},
-		{correct: !correct, format: "format", args: nil, shouldPanic: isDebug},
-		{correct: !correct, format: "", args: nil, shouldPanic: isDebug},
-		{correct: !correct, format: "", args: []interface{}{1, "val", 3.14}, shouldPanic: isDebug},
+		{format: "%v %v %v", args: []interface{}{1, "val", 3.14}},
+		{format: "wrong num of placeholders ", args: []interface{}{1, "val", 3.14}},
+		{format: "format", args: nil},
+		{format: "", args: nil},
+		{format: "", args: []interface{}{1, "val", 3.14}},
 	}
 
 	for _, tt := range tests {
-		got, msg := hasPanicked(func() {
-			f(tt.correct, tt.format, tt.args...)
-		})
-		if got != tt.shouldPanic {
-			if tt.shouldPanic {
-				t.Error("assert.True should have panicked but didn't")
-			} else {
-				t.Errorf("assert.True should not have panicked but did, with:\n%v", msg)
+
+		// run tests twice:
+		// - once with the expected value (no assert)
+		// - once with unexpected value (should assert if debug flag is on)
+		for _, exp := range []bool{true, false} {
+
+			got, msg := hasPanicked(func() { f(exp, tt.format, tt.args...) })
+			// we want to panic if asserted value is not the one expected AND
+			// the debug flag is set
+			want := !exp && isDebug
+			if got != want {
+				if want {
+					t.Error("should have panicked but didn't")
+				} else {
+					t.Errorf("should not have panicked but did, with:\n%v", msg)
+				}
 			}
 		}
 	}
 }
 
-func TestTrue(t *testing.T)  { testAssert(t, True, true) }
-func TestFalse(t *testing.T) { testAssert(t, False, false) }
+func TestTrue(t *testing.T) {
+	testAssert(t, func(exp bool, format string, a ...interface{}) { True(exp, a) })
+}
 
-/*
 func TestFalse(t *testing.T) {
-	tests := []struct {
-		cond   bool
-		format string
-		args   []interface{}
-	}{}
-	for _, tt := range tests {
-		True(tt.cond, tt.format, tt.args...)
+	testAssert(t, func(exp bool, format string, a ...interface{}) { False(!exp, a) })
+}
+
+func TestTruef(t *testing.T) {
+	testAssert(t, func(exp bool, format string, a ...interface{}) { Truef(exp, format, a) })
+}
+
+func TestFalsef(t *testing.T) {
+	testAssert(t, func(exp bool, format string, a ...interface{}) { Falsef(!exp, format, a) })
+}
+
+func BenchmarkTrue(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		True(true, "")
 	}
 }
-*/
+
+func BenchmarkFalse(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		False(false, "")
+	}
+}
+
+func BenchmarkTruef(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Truef(true, "")
+	}
+}
+
+func BenchmarkFalsef(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Falsef(false, "")
+	}
+}
