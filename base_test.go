@@ -24,9 +24,10 @@ func hasPanicked(f func()) (bool, interface{}) {
 	return didPanic, msg
 }
 
-type assertFunc func(bool, string, ...interface{})
+type assertFunc func(bool, ...interface{})
+type assertFuncf func(bool, string, ...interface{})
 
-func testAssert(t *testing.T, f assertFunc, correct bool) {
+func testAssertf(t *testing.T, f assertFuncf, correct bool) {
 	tests := []struct {
 		correct     bool
 		format      string
@@ -62,18 +63,8 @@ func testAssert(t *testing.T, f assertFunc, correct bool) {
 	}
 }
 
-func TestTrue(t *testing.T)  { testAssert(t, True, true) }
-func TestFalse(t *testing.T) { testAssert(t, False, false) }
+//func TestTrue(t *testing.T)  { testAssert(t, True, true) }
+//func TestFalse(t *testing.T) { testAssert(t, False, false) }
 
-/*
-func TestFalse(t *testing.T) {
-	tests := []struct {
-		cond   bool
-		format string
-		args   []interface{}
-	}{}
-	for _, tt := range tests {
-		True(tt.cond, tt.format, tt.args...)
-	}
-}
-*/
+func TestTruef(t *testing.T)  { testAssertf(t, Truef, true) }
+func TestFalsef(t *testing.T) { testAssertf(t, Falsef, false) }
