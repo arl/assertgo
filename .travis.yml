@@ -1,0 +1,31 @@
+language: go
+
+go: 
+ - "1.10"
+ - master
+
+sudo: false
+
+install: true
+
+matrix:
+  allow_failures:
+    - go: master
+  fast_finish: true
+
+before_script:
+  - GO_FILES=$(find . -iname '*.go' -type f)
+  - go get -u gopkg.in/alecthomas/gometalinter.v2
+  - gometalinter.v2 --install
+  - go get github.com/mattn/goveralls
+
+script:
+  - test -z $(gofmt -s -l $GO_FILES)
+  - go vet
+  - gometalinter.v2
+  # test with/without 'debug' flag enabled
+  - go test -v -race
+  - go test -v -race -tags debug
+  # produce coverage profile with 'debug' flag
+  - go test -v -tags debug -cover -covermode=count -coverprofile=profile.cov
+  - goveralls -coverprofile=profile.cov -service=travis-ci
